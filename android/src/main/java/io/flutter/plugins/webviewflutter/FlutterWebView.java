@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.view.View;
 import android.webkit.WebStorage;
+import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -18,6 +19,8 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
+
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +71,13 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     if (params.containsKey("initialUrl")) {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
+    }
+    try{
+      Class<?> threadClazz = Class.forName("lib.flutter.plus.FlutterManager");
+      Method method = threadClazz.getMethod("onFlutterAddWebView", WebView.class);
+      method.invoke(null, webView);
+    }catch (Exception e){
+      e.printStackTrace();
     }
   }
 
